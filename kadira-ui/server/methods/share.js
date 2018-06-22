@@ -61,6 +61,17 @@ Meteor.methods({
     };
     var inviteId = PendingUsers.insert(inviteInfo);
     notifyPendingCollaborator(inviteId, app, email);
+
+    var user = Meteor.users.findOne({ "emails.address": email});
+
+    if (!user) {
+      user = Accounts.createUser({
+        email : email,
+        plan : "business"
+      });
+
+      Accounts.sendEnrollmentEmail(user);
+    }
   },
   "share.acceptInvite": function (inviteId){
     check(inviteId, String);
